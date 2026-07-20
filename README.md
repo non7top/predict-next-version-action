@@ -85,7 +85,7 @@ This action only runs anything meaningful on `pull_request` events — it reads
 |-----------------|----------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `github-token`  | yes      | —         | Token for release-please's own API calls and (if `post-comment` is `true`) for commenting/labeling the PR. Composite actions can't read the secrets context directly, so this must be passed in explicitly (e.g. `secrets.GITHUB_TOKEN`). |
 | `post-comment`  | no       | `'true'`  | Whether to also post/update a preview PR comment and set/remove the release label as a side effect. |
-| `release-label` | no       | `'RELEASE'` | Name of the label to create (if missing) and add/remove on the PR when `post-comment` is `true`. |
+| `release-label` | no       | `'RELEASE'` | Name of the label to create (if missing) and add/remove/recolor on the PR when `post-comment` is `true`, to flag whether merging it would trigger a release and (via color) what kind of bump it would be. |
 
 ## Outputs
 
@@ -93,6 +93,12 @@ This action only runs anything meaningful on `pull_request` events — it reads
 |-----------------|------------------------------------------------------------------------------|
 | `version`       | Predicted next version (e.g. `1.2.0`) if this PR were merged right now, or empty if there are no releasable changes. |
 | `would-release` | Whether merging this PR would trigger a release (`"true"`/`"false"`).       |
+| `bump-type`     | Predicted bump type (`"major"`/`"minor"`/`"patch"`) if this PR were merged right now, or empty if there are no releasable changes. |
+
+When `post-comment` is `true`, the release label is also recolored by `bump-type`: red (`D93F0B`) for
+major, yellow (`FBCA04`) for minor, green (`0E8A16`) for patch. If your workflow also colors this same
+label elsewhere (e.g. from release-please's own generated release PR, once merged), keep both color
+schemes in sync so the label means the same thing everywhere it shows up.
 
 ## Permissions
 
